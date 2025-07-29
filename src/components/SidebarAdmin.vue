@@ -4,8 +4,8 @@
     <aside style="background-color: #363740; width: 20%;" class="flex flex-col justify-between">
       <!-- Navigation -->
       <nav>
-         <div class="flex items-center justify-cen pl-8">
-          <img style="width: 70%; height: auto; padding: 50px 0; opacity: 0.7;" src="../assets/images/mock.jpg" alt="Logo"></img>
+         <div class="flex items-center justify-center">
+          <img style="width: 65%; height: auto; padding: 50px 0; opacity: 0.7;" src="../assets/images/mock.jpg" alt="Logo"></img>
          </div>
         <!-- Dashboard -->
         <RouterLink 

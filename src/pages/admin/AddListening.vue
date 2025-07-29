@@ -1,109 +1,205 @@
 <template>
-  <div class="p-6">
-    <h1 class="text-2xl font-bold mb-6">Add Listening Questions</h1>
+  <div class="p-6 mx-auto">
+    <h1 class="text-2xl font-bold mb-6">Create IELTS Listening Test</h1>
 
-    <div v-for="(question, index) in questions" :key="index" class="mb-8 border p-4 rounded-lg shadow-sm bg-white">
-      <h2 class="font-semibold mb-4">Question {{ index + 1 }} (Part {{ getPart(index) }})</h2>
-
-      <!-- Question Type -->
-      <label class="block mb-2 text-sm font-medium">Question Type:</label>
-      <select
-        v-model="question.type"
-        class="w-full border px-3 py-2 mb-4 rounded"
-      >
-        <option value="multiple-choice">Multiple Choice</option>
-        <option value="gap-fill">Gap Fill</option>
-        <option value="map-labeling">Map Labeling</option>
-        <option value="matching">Matching</option>
-        <option value="short-answer">Short Answer</option>
-      </select>
-
-      <!-- Question Text -->
-      <label class="block mb-2 text-sm font-medium">Question Text:</label>
-      <textarea
-        v-model="question.text"
-        class="w-full border px-3 py-2 mb-4 rounded"
-        rows="3"
-        placeholder="Enter question text..."
-      ></textarea>
-
-      <!-- Conditional Inputs -->
-      <div v-if="question.type === 'multiple-choice'">
-        <label class="block mb-2 text-sm font-medium">Options:</label>
-        <div v-for="(option, optIndex) in question.options" :key="optIndex" class="flex gap-2 mb-2">
-          <input
-            v-model="question.options[optIndex]"
-            class="w-full border px-3 py-2 rounded"
-            :placeholder="`Option ${optIndex + 1}`"
-          />
-          <button @click="removeOption(index, optIndex)" class="text-red-500"><Trash class="sidebar-icon w-5 h-5 mr-4" /></button>
+    <div
+      v-for="(part, pIndex) in parts"
+      :key="pIndex"
+      class="mb-10 border rounded p-4 bg-white shadow-sm transition-all duration-300 hover:shadow-md"
+    >
+      <div class="flex justify-between items-center mb-4">
+        <div class="flex items-center gap-2 text-xl font-semibold">
+          <Music class="w-6 h-6 " />
+          <span>Part {{ pIndex + 1 }}</span>
         </div>
-        <button @click="addOption(index)" class="text-blue-600 text-sm">+ Add Option</button>
+        <label class="cursor-pointer inline-flex items-center gap-2 text-sm text-blue-600 hover:text-blue-800 transition">
+          <Upload class="w-5 h-5" />
+          <span>Upload Audio</span>
+          <input type="file" accept="audio/*" @change="e => handleAudioUpload(e, pIndex)" class="hidden" />
+        </label>
       </div>
 
-      <!-- Answer -->
-      <label class="block mt-4 mb-2 text-sm font-medium">Answer:</label>
-      <input
-        v-model="question.answer"
-        class="w-full border px-3 py-2 rounded"
-        placeholder="Correct answer"
-      />
+      <div class="space-y-6">
+        <div
+          v-for="(question, qIndex) in part.questions"
+          :key="qIndex"
+          class="border p-4 rounded bg-gray-50"
+        >
+          <div class="flex justify-between items-center mb-2">
+            <div class="flex items-center gap-2 font-semibold">
+              <CircleHelp class="w-4 h-4 text-indigo-500" />
+              <h3>Question {{ pIndex * 10 + qIndex + 1 }}</h3>
+            </div>
+            <button @click="removeQuestion(pIndex, qIndex)" v-if="part.questions.length > 1" class="text-red-500 hover:text-red-700 transition">
+              <Trash class="w-4 h-4" />
+            </button>
+          </div>
+
+          <label class="block mb-1 text-sm font-medium">Question Type:</label>
+          <select v-model="question.type" class="border p-1 w-full mb-3">
+            <option v-for="type in questionTypes" :key="type.value" :value="type.value">
+              {{ type.label }}
+            </option>
+          </select>
+
+          <label class="block mb-1 text-sm font-medium">Question Text:</label>
+          <textarea
+            v-model="question.text"
+            class="border w-full p-2 mb-3 focus:outline-none focus:border-[#AEB2C9] transition-all"
+          ></textarea>
+
+          <!-- Options (if applicable) -->
+          <div v-if="usesOptions(question.type)">
+            <label class="block mb-1 text-sm font-medium">Options:</label>
+            <div v-for="(opt, i) in question.options" :key="i" class="flex items-center mb-2">
+              <input
+                v-model="question.options[i]"
+                class="border p-1 w-full mr-2 focus:outline-none focus:border-[#AEB2C9] transition"
+              />
+              <button
+                @click="removeOption(pIndex, qIndex, i)"
+                :disabled="question.options.length <= 1"
+                class="text-red-500 hover:text-red-700 transition"
+              >
+                <Trash class="w-5 h-5" />
+              </button>
+            </div>
+            <button @click="addOption(pIndex, qIndex)" class="text-white rounded px-2 py-1 bg-blue-600 hover:bg-blue-700 transition">
+                <Plus class="w-5 h-5"/>
+            </button>
+          </div>
+
+          <!-- Answer -->
+          <label class="block mt-3 mb-1 text-sm font-medium">Correct Answer:</label>
+          <input
+            v-model="question.answer"
+            class="border p-1 w-full focus:outline-none focus:border-[#AEB2C9] transition"
+          />
+        </div>
+      </div>
+
+      <button
+        @click="addQuestion(pIndex)"
+        :disabled="part.questions.length >= 10"
+        class="mt-4 text-green-600 hover:text-green-800 transition"
+      >
+        + Add Question
+      </button>
     </div>
 
-    <button
-      @click="submit"
-      class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded"
-    >
-      Save All Questions
-    </button>
+    <div class="text-right">
+      <button @click="submit" class="flex items-center bg-[#363740] text-white px-4 py-2 rounded hover:bg-[#323c46] transition">
+        <SaveIcon class="w-4 h-4 mr-2" />
+        Submit Test
+      </button>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { Trash } from 'lucide-vue-next'
+import { Trash, Upload, Music, CircleHelp, SaveIcon, Plus } from 'lucide-vue-next'
 
+// Types
 
-interface ListeningQuestion {
-  type: string
+type QuestionType =
+  | 'multiple_choice'
+  | 'matching'
+  | 'plan_map_labeling'
+  | 'form_note_table'
+  | 'summary_completion'
+  | 'sentence_completion'
+  | 'short_answer'
+  | 'pick_from_list'
+  | 'flow_chart_completion'
+  | 'diagram_label'
+
+interface Question {
+  type: QuestionType
   text: string
   options: string[]
   answer: string
 }
 
-const questions = ref<ListeningQuestion[]>(
-  Array.from({ length: 40 }, () => ({
-    type: 'multiple-choice',
+interface Part {
+  audio: File | null
+  questions: Question[]
+}
+
+const questionTypes = [
+  { value: 'multiple_choice', label: 'Multiple Choice' },
+  { value: 'matching', label: 'Matching' },
+  { value: 'plan_map_labeling', label: 'Plan/Map/Diagram Labeling' },
+  { value: 'form_note_table', label: 'Form/Note/Table Completion' },
+  { value: 'summary_completion', label: 'Summary Completion' },
+  { value: 'sentence_completion', label: 'Sentence Completion' },
+  { value: 'short_answer', label: 'Short Answer' },
+  { value: 'pick_from_list', label: 'Pick From List' },
+  { value: 'flow_chart_completion', label: 'Flow-Chart Completion' },
+  { value: 'diagram_label', label: 'Diagram Label' }
+]
+
+const parts = ref<Part[]>([
+  { audio: null, questions: [createQuestion()] },
+  { audio: null, questions: [createQuestion()] },
+  { audio: null, questions: [createQuestion()] },
+  { audio: null, questions: [createQuestion()] }
+])
+
+function createQuestion(): Question {
+  return {
+    type: 'multiple_choice',
     text: '',
-    options: ['', '', '', ''],
+    options: [''],
     answer: ''
-  }))
-)
-
-const getPart = (index: number) => {
-  if (index < 10) return 1
-  if (index < 20) return 2
-  if (index < 30) return 3
-  return 4
+  }
 }
 
-const addOption = (qIndex: number) => {
-  questions.value[qIndex].options.push('')
+function addQuestion(partIndex: number) {
+  if (parts.value[partIndex].questions.length < 10) {
+    parts.value[partIndex].questions.push(createQuestion())
+  }
 }
 
-const removeOption = (qIndex: number, optIndex: number) => {
-  const options = questions.value[qIndex].options
+function removeQuestion(partIndex: number, questionIndex: number) {
+  if (parts.value[partIndex].questions.length > 1) {
+    parts.value[partIndex].questions.splice(questionIndex, 1)
+  }
+}
+
+function addOption(partIndex: number, qIndex: number) {
+  parts.value[partIndex].questions[qIndex].options.push('')
+}
+
+function removeOption(partIndex: number, qIndex: number, optIndex: number) {
+  const options = parts.value[partIndex].questions[qIndex].options
   if (options.length > 1) {
     options.splice(optIndex, 1)
   }
 }
 
-const submit = () => {
-  console.log('Submitted Questions:', questions.value)
-  // You can send questions.value to the backend here
+function usesOptions(type: string) {
+  return ['multiple_choice', 'matching', 'pick_from_list'].includes(type)
+}
+
+function handleAudioUpload(e: Event, partIndex: number) {
+  const file = (e.target as HTMLInputElement).files?.[0]
+  if (file) {
+    parts.value[partIndex].audio = file
+  }
+}
+
+function submit() {
+  console.log('Submitting test:', parts.value)
+  alert('Test structure saved (check console).')
 }
 </script>
 
 <style scoped>
-/* Optional custom styles */
+input,
+textarea,
+select {
+  border-radius: 4px;
+  transition: border-color 0.3s ease;
+}
 </style>
