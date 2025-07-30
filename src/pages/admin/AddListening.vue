@@ -1,105 +1,143 @@
 <template>
-  <div class="p-6 mx-auto">
-    <h1 class="text-2xl font-bold mb-6">Create IELTS Listening Test</h1>
+  <div class="min-h-screen py-10 px-6 bg-gradient-to-br from-gray-100 to-gray-200">
+    <div class="max-w-6xl mx-auto bg-white shadow-xl rounded-2xl p-8 animate-fade-in">
+      <h2 class="text-3xl font-bold text-gray-800 mb-8 flex items-center gap-3">
+        <BookHeadphones class="w-7 h-7 text-gray-600" /> Add Listening Questions
+      </h2>
 
-    <div
-      v-for="(part, pIndex) in parts"
-      :key="pIndex"
-      class="mb-10 border rounded p-4 bg-white shadow-sm transition-all duration-300 hover:shadow-md"
-    >
-      <div class="flex justify-between items-center mb-4">
-        <div class="flex items-center gap-2 text-xl font-semibold">
-          <Music class="w-6 h-6 " />
-          <span>Part {{ pIndex + 1 }}</span>
-        </div>
-        <label class="cursor-pointer inline-flex items-center gap-2 text-sm text-blue-600 hover:text-blue-800 transition">
-          <Upload class="w-5 h-5" />
-          <span>Upload Audio</span>
-          <input type="file" accept="audio/*" @change="e => handleAudioUpload(e, pIndex)" class="hidden" />
-        </label>
-      </div>
-
-      <div class="space-y-6">
-        <div
-          v-for="(question, qIndex) in part.questions"
-          :key="qIndex"
-          class="border p-4 rounded bg-gray-50"
-        >
-          <div class="flex justify-between items-center mb-2">
-            <div class="flex items-center gap-2 font-semibold">
-              <CircleHelp class="w-4 h-4 text-indigo-500" />
-              <h3>Question {{ pIndex * 10 + qIndex + 1 }}</h3>
-            </div>
-            <button @click="removeQuestion(pIndex, qIndex)" v-if="part.questions.length > 1" class="text-red-500 hover:text-red-700 transition">
-              <Trash class="w-4 h-4" />
-            </button>
+      <div
+        v-for="(part, pIndex) in parts"
+        :key="pIndex"
+        class="mb-10 border border-gray-300 rounded-xl p-6 bg-gray-50 hover:shadow-md transition-shadow duration-300"
+      >
+        <div class="flex justify-between items-center mb-6">
+          <div class="flex items-center gap-2 text-xl font-semibold text-gray-700">
+            <Music class="w-6 h-6 text-gray-500" />
+            <span>Part {{ pIndex + 1 }}</span>
           </div>
 
-          <label class="block mb-1 text-sm font-medium">Question Type:</label>
-          <select v-model="question.type" class="border p-1 w-full mb-3">
-            <option v-for="type in questionTypes" :key="type.value" :value="type.value">
-              {{ type.label }}
-            </option>
-          </select>
+          <label
+            class="cursor-pointer inline-flex items-center gap-2 text-sm text-blue-600 hover:text-blue-800 transition"
+          >
+            <Upload class="w-5 h-5" />
+            <span>Upload Audio</span>
+            <input type="file" accept="audio/*" @change="e => handleAudioUpload(e, pIndex)" class="hidden" />
+          </label>
+        </div>
 
-          <label class="block mb-1 text-sm font-medium">Question Text:</label>
-          <textarea
-            v-model="question.text"
-            class="border w-full p-2 mb-3 focus:outline-none focus:border-[#AEB2C9] transition-all"
-          ></textarea>
+        <div class="space-y-6">
+          <div
+            v-for="(question, qIndex) in part.questions"
+            :key="qIndex"
+            class="border border-gray-300 p-5 rounded-lg bg-white"
+          >
+            <div class="flex justify-between items-center mb-4">
+              <div class="flex items-center gap-2 font-semibold text-gray-700">
+                <CircleHelp class="w-4 h-4 text-indigo-500" />
+                <h3>Question {{ pIndex * 10 + qIndex + 1 }}</h3>
+              </div>
 
-          <!-- Options (if applicable) -->
-          <div v-if="usesOptions(question.type)">
-            <label class="block mb-1 text-sm font-medium">Options:</label>
-            <div v-for="(opt, i) in question.options" :key="i" class="flex items-center mb-2">
-              <input
-                v-model="question.options[i]"
-                class="border p-1 w-full mr-2 focus:outline-none focus:border-[#AEB2C9] transition"
-              />
               <button
-                @click="removeOption(pIndex, qIndex, i)"
-                :disabled="question.options.length <= 1"
+                @click="removeQuestion(pIndex, qIndex)"
+                v-if="part.questions.length > 1"
                 class="text-red-500 hover:text-red-700 transition"
               >
-                <Trash class="w-5 h-5" />
+                <Trash class="w-4 h-4" />
               </button>
             </div>
-            <button @click="addOption(pIndex, qIndex)" class="text-white rounded px-2 py-1 bg-blue-600 hover:bg-blue-700 transition">
-                <Plus class="w-5 h-5"/>
-            </button>
-          </div>
 
-          <!-- Answer -->
-          <label class="block mt-3 mb-1 text-sm font-medium">Correct Answer:</label>
-          <input
-            v-model="question.answer"
-            class="border p-1 w-full focus:outline-none focus:border-[#AEB2C9] transition"
-          />
+            <div class="mb-4">
+              <label class="block text-sm font-medium text-gray-600 mb-1">Question Type:</label>
+              <select
+                v-model="question.type"
+                class="w-full border border-gray-300 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400"
+              >
+                <option
+                  v-for="type in questionTypes"
+                  :key="type.value"
+                  :value="type.value"
+                >
+                  {{ type.label }}
+                </option>
+              </select>
+            </div>
+
+            <div class="mb-4">
+              <label class="block text-sm font-medium text-gray-600 mb-1">Question Text:</label>
+              <textarea
+                v-model="question.text"
+                rows="3"
+                class="w-full border border-gray-300 p-3 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400"
+              ></textarea>
+            </div>
+
+            <!-- Options -->
+            <div v-if="usesOptions(question.type)" class="mb-4">
+              <label class="block text-sm font-medium text-gray-600 mb-1">Options:</label>
+              <div
+                v-for="(opt, i) in question.options"
+                :key="i"
+                class="flex items-center gap-2 mb-2"
+              >
+                <input
+                  v-model="question.options[i]"
+                  class="w-full border border-gray-300 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400"
+                />
+                <button
+                  @click="removeOption(pIndex, qIndex, i)"
+                  :disabled="question.options.length <= 1"
+                  class="text-gray-500 hover:text-red-500 transition"
+                >
+                  <X class="w-4 h-4" />
+                </button>
+              </div>
+
+              <button
+                @click="addOption(pIndex, qIndex)"
+                class="mt-1 inline-flex items-center px-3 py-1 bg-gray-100 border border-gray-300 rounded hover:bg-gray-200 transition"
+              >
+                <Plus class="w-4 h-4 mr-1" /> Add Option
+              </button>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-600 mb-1">Correct Answer:</label>
+              <input
+                v-model="question.answer"
+                class="w-full border border-gray-300 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400"
+              />
+            </div>
+          </div>
         </div>
+
+        <button
+          @click="addQuestion(pIndex)"
+          :disabled="part.questions.length >= 10"
+          class="mt-5 text-green-600 hover:text-green-800 transition font-medium"
+        >
+          + Add Question
+        </button>
       </div>
 
-      <button
-        @click="addQuestion(pIndex)"
-        :disabled="part.questions.length >= 10"
-        class="mt-4 text-green-600 hover:text-green-800 transition"
-      >
-        + Add Question
-      </button>
-    </div>
-
-    <div class="text-right">
-      <button @click="submit" class="flex items-center bg-[#363740] text-white px-4 py-2 rounded hover:bg-[#323c46] transition">
-        <SaveIcon class="w-4 h-4 mr-2" />
-        Submit Test
-      </button>
+      <div class="text-right">
+        <button
+          @click="submit"
+          class="inline-flex items-center bg-gray-800 text-white px-5 py-3 rounded-lg hover:bg-gray-900 transition"
+        >
+          <SaveIcon class="w-4 h-4 mr-2" />
+          Save Questions
+        </button>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { Trash, Upload, Music, CircleHelp, SaveIcon, Plus } from 'lucide-vue-next'
+import { Trash, Upload, Music, CircleHelp, SaveIcon, Plus, X, BookHeadphones } from 'lucide-vue-next'
+import { useTestStore } from '../../store/testStore' // Import Pinia store
 
+const testStore = useTestStore()
 // Types
 
 type QuestionType =
@@ -190,16 +228,25 @@ function handleAudioUpload(e: Event, partIndex: number) {
 }
 
 function submit() {
-  console.log('Submitting test:', parts.value)
-  alert('Test structure saved (check console).')
+  console.log('Submitting Listening test:', parts.value)
+  testStore.setListeningQuestions(parts.value)
+  alert('Listening test saved!')
 }
 </script>
 
 <style scoped>
-input,
-textarea,
-select {
-  border-radius: 4px;
-  transition: border-color 0.3s ease;
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.5s ease-out both;
 }
 </style>

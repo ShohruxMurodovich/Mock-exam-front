@@ -2,7 +2,7 @@ import { createWebHistory, createRouter } from 'vue-router'
 
 
 // Student pages
-import StudentInfo from '../pages/StudentInfo.vue'
+import TestView from '../pages/TestWizard.vue'
 
 
 // Admin pages
@@ -11,10 +11,11 @@ import AdminLogin from '../pages/admin/AdminLogin.vue'
 import SidebarAdmin from '../components/SidebarAdmin.vue'
 import AddWriting from '../pages/admin/AddWriting.vue'
 import AddListening from '../pages/admin/AddListening.vue'
+import AddReading from '../pages/admin/AddReading.vue'
 
 
 const routes = [
-  { path: '/', component: StudentInfo },
+  { path: '/', component: TestView },
 
   { path: '/admin/login', component: AdminLogin },
     {
@@ -25,6 +26,7 @@ const routes = [
       { path: '', component: AdminDashboard },
       { path: 'add-writing', component: AddWriting },
       { path: 'add-listening', component: AddListening },
+      { path: 'add-reading', component: AddReading },
       // { path: 'results', component: ViewResults },
       // { path: 'score-writing', component: ScoreWriting },
     ],
