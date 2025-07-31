@@ -1,4 +1,3 @@
-// stores/testStore.ts
 import { defineStore } from 'pinia'
 
 interface WritingTask1 {
@@ -12,8 +11,18 @@ interface WritingTask2 {
   type: string
 }
 
+interface StudentInfo {
+  fullName: string
+  group: string
+}
+
 export const useTestStore = defineStore('testStore', {
   state: () => ({
+    studentInfo: {
+      fullName: '',
+      group: '',
+    } as StudentInfo,
+
     listeningQuestions: [] as any[],
     readingQuestions: [] as any[],
     writingQuestions: {
@@ -29,6 +38,10 @@ export const useTestStore = defineStore('testStore', {
     },
   }),
   actions: {
+    setStudentInfo(fullName: string, group: string) {
+      this.studentInfo.fullName = fullName
+      this.studentInfo.group = group
+    },
     setListeningQuestions(questions: any[]) {
       this.listeningQuestions = questions
     },

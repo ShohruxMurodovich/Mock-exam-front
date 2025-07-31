@@ -2,6 +2,7 @@ import { createWebHistory, createRouter } from 'vue-router'
 
 
 // Student pages
+import StudentLogin from '../pages/StudentInfo.vue'
 import TestView from '../pages/TestWizard.vue'
 
 
@@ -15,7 +16,8 @@ import AddReading from '../pages/admin/AddReading.vue'
 
 
 const routes = [
-  { path: '/', component: TestView },
+  { path: '/', component: StudentLogin },
+  { path: '/student-test', component: TestView },
 
   { path: '/admin/login', component: AdminLogin },
     {

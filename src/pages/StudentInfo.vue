@@ -35,14 +35,17 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-// import { useTestStore } from '../store/testStore'
+import { useRouter } from 'vue-router'
+import { useTestStore } from '../store/testStore'
 
-// const store = useTestStore()
+const store = useTestStore()
+const router = useRouter()
 const name = ref('')
 const group = ref('')
 
 function saveInfo() {
-  // store.setStudentInfo(name.value, group.value)
+  store.setStudentInfo(name.value, group.value)
+  router.push('/student-test')
 }
 </script>
 

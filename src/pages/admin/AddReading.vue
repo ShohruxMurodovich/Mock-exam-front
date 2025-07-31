@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-screen bg-gray-100 py-10 px-4">
-    <div class="max-w-6xl mx-auto bg-white p-8 rounded-2xl shadow-xl">
+    <div class="max-w-6xl mx-auto bg-white p-8 rounded-2xl shadow-xl animate-fade-in">
       <!-- Header -->
       <div class="flex justify-between items-center mb-8">
         <h2 class="text-3xl font-bold text-gray-800 flex items-center gap-3">
@@ -72,7 +72,7 @@
               <div v-if="needsOptions(q.type)" class="mt-4">
                 <label class="block text-sm">Options</label>
                 <div class="space-y-2">
-                  <div v-for="(opt, optIdx) in q.options" :key="optIdx" class="flex gap-2">
+                  <div v-for="(_, optIdx) in q.options" :key="optIdx" class="flex gap-2">
                     <input v-model="q.options[optIdx]" class="flex-1 border rounded p-2" />
                     <button @click="removeOption(sectionIndex, groupIndex, qIndex, optIdx)" class="text-red-500 text-lg">&times;</button>
                   </div>

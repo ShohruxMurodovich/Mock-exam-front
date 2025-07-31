@@ -1,5 +1,5 @@
 <template>
-  <div class="max-w-4xl mx-auto mt-12 p-8 bg-white rounded-xl shadow-md">
+  <div class="max-w-6xl mx-auto mt-12 p-8 bg-white rounded-xl shadow-md animate-fade-in">
     <h2 class="text-3xl font-bold text-gray-800 mb-8">Create IELTS Writing Test</h2>
 
     <form @submit.prevent="saveQuestions" class="space-y-12">
@@ -106,7 +106,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { FileText, PencilLine, UploadCloud, Trash2, SaveIcon } from 'lucide-vue-next'
+import { UploadCloud, Trash2, SaveIcon } from 'lucide-vue-next'
 import { useTestStore } from '../../store/testStore'
 
 const testStore = useTestStore()
@@ -171,3 +171,20 @@ function saveQuestions() {
   saved.value = true
 }
 </script>
+
+
+<style scoped>
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-fade-in {
+  animation: fade-in 0.5s ease-out both;
+}
+</style>

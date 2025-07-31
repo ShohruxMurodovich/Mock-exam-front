@@ -59,7 +59,16 @@
               </select>
             </div>
 
-            <div class="mb-4">
+            <!-- Conditional UI for sentence completion -->
+            <div v-if="question.type === 'sentence_completion'" class="mb-4">
+              <label class="block text-sm font-medium text-gray-600 mb-1">Sentence (use "___" for blank):</label>
+              <textarea v-model="question.text" rows="2"
+                class="w-full border border-gray-300 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400"></textarea>
+              <p class="text-xs text-gray-500 mt-1">Use "___" in the sentence to indicate where the answer should go.</p>
+            </div>
+
+            <!-- Default Question Text (if not sentence_completion) -->
+            <div class="mb-4" v-else>
               <label class="block text-sm font-medium text-gray-600 mb-1">Question Text:</label>
               <textarea v-model="question.text" rows="3"
                 class="w-full border border-gray-300 p-3 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400"></textarea>
@@ -75,7 +84,7 @@
 
             <div v-if="usesOptions(question.type)" class="mb-4">
               <label class="block text-sm font-medium text-gray-600 mb-1">Options:</label>
-              <div v-for="(opt, i) in question.options" :key="i" class="flex items-center gap-2 mb-2">
+              <div v-for="(_, i) in question.options" :key="i" class="flex items-center gap-2 mb-2">
                 <input v-model="question.options[i]"
                   class="w-full border border-gray-300 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400" />
                 <button @click="removeOption(pIndex, qIndex, i)" :disabled="question.options.length <= 1"
@@ -92,7 +101,7 @@
             <div class="mb-4">
               <label class="block text-sm font-medium text-gray-600 mb-1">Correct Answer:</label>
               <div v-if="allowsMultipleAnswers(question.type)">
-                <div v-for="(ans, i) in question.answerList" :key="i" class="flex gap-2 mb-2">
+                <div v-for="(_, i) in question.answerList" :key="i" class="flex gap-2 mb-2">
                   <input v-model="question.answerList[i]"
                     class="w-full border border-gray-300 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400" />
                   <button @click="question.answerList.splice(i, 1)" class="text-red-500">
