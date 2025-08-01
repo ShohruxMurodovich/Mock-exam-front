@@ -1,6 +1,6 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 px-4 py-10">
-    <div class="max-w-6xl mx-auto bg-white rounded-2xl shadow-xl p-6">
+  <div class="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 px-4 pt-10">
+    <div class="max-w-9xl mx-auto bg-white shadow-xl p-8 pb-0">
       <!-- Header -->
       <div class="flex justify-between items-center mb-6">
         <h1 class="text-2xl font-bold text-blue-800">IELTS Mock Test</h1>

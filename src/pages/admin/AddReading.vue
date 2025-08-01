@@ -23,6 +23,10 @@
             </button>
           </div>
 
+          <!-- Title -->
+          <label class="block text-sm font-medium text-gray-600 mb-1">Reading Title</label>
+          <input v-model="section.title" class="w-full border border-gray-300 rounded-md p-3 mb-4" placeholder="Enter the reading title..." />
+
           <!-- Passage -->
           <label class="block text-sm font-medium text-gray-600 mb-1">Reading Passage</label>
           <textarea v-model="section.passage" rows="5" class="w-full border border-gray-300 rounded-md p-3 mb-4" placeholder="Enter the reading passage..."></textarea>
@@ -42,6 +46,23 @@
             <label class="block text-sm font-medium text-gray-600 mb-1">Group Instruction (optional)</label>
             <input v-model="group.instruction" class="w-full border border-gray-300 rounded-md p-2 mb-4" placeholder="Instruction for this question group..." />
 
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-600">Question Type</label>
+                <select v-model="group.type" class="w-full border rounded p-2">
+                  <option v-for="type in questionTypes" :key="type" :value="type">{{ type }}</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-600">Word Limit (optional)</label>
+                <input type="number" min="1" v-model.number="group.wordLimit" class="w-full border rounded p-2" />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-600">Explanation (optional)</label>
+                <input v-model="group.explanation" class="w-full border rounded p-2" />
+              </div>
+            </div>
+
             <!-- Questions -->
             <div v-for="(q, qIndex) in group.questions" :key="qIndex" class="bg-gray-50 border border-gray-200 rounded-md p-4 mb-4">
               <div class="flex justify-between items-center mb-2">
@@ -51,25 +72,12 @@
                 </button>
               </div>
 
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label class="block text-sm">Type</label>
-                  <select v-model="q.type" class="w-full border rounded p-2">
-                    <option v-for="type in questionTypes" :key="type" :value="type">{{ type }}</option>
-                  </select>
-                </div>
-                <div>
-                  <label class="block text-sm">Word Limit (optional)</label>
-                  <input type="number" min="1" v-model.number="q.wordLimit" class="w-full border rounded p-2" />
-                </div>
-              </div>
-
-              <div class="mt-4">
+              <div class="mt-2">
                 <label class="block text-sm">Question Text</label>
                 <textarea v-model="q.text" rows="2" class="w-full border rounded p-2"></textarea>
               </div>
 
-              <div v-if="needsOptions(q.type)" class="mt-4">
+              <div v-if="needsOptions(group.type)" class="mt-4">
                 <label class="block text-sm">Options</label>
                 <div class="space-y-2">
                   <div v-for="(_, optIdx) in q.options" :key="optIdx" class="flex gap-2">
@@ -83,11 +91,6 @@
               <div class="mt-4">
                 <label class="block text-sm">Correct Answer</label>
                 <input v-model="q.answer" class="w-full border rounded p-2" />
-              </div>
-
-              <div class="mt-4">
-                <label class="block text-sm">Explanation (optional)</label>
-                <textarea v-model="q.explanation" rows="2" class="w-full border rounded p-2"></textarea>
               </div>
             </div>
 
@@ -112,12 +115,16 @@
       <div v-else class="bg-white border rounded p-6">
         <h3 class="text-2xl font-bold mb-6 text-gray-800">Reading Test Preview</h3>
         <div v-for="(section, sIdx) in sections" :key="sIdx" class="mb-10">
+          <h4 class="text-xl font-semibold text-gray-800 mb-2" v-if="section.title">{{ section.title }}</h4>
           <p class="mb-4 whitespace-pre-wrap text-gray-700">{{ section.passage }}</p>
           <div v-if="section.image">
             <img :src="getSectionImageUrl(section)" class="mb-4 rounded max-w-full" />
           </div>
           <div v-for="(group, gIdx) in section.groups" :key="gIdx" class="mb-6">
             <p class="italic text-sm text-gray-600 mb-2" v-if="group.instruction">{{ group.instruction }}</p>
+            <p class="text-sm text-gray-700 mb-1"><strong>Type:</strong> {{ group.type }}</p>
+            <p class="text-sm text-gray-700 mb-1" v-if="group.wordLimit"><strong>Word Limit:</strong> {{ group.wordLimit }}</p>
+            <p class="text-sm italic text-gray-600 mb-2" v-if="group.explanation">{{ group.explanation }}</p>
             <div v-for="(q, qIdx) in group.questions" :key="qIdx" class="mb-4">
               <p class="font-medium">Q{{ getGlobalQuestionNumber(sIdx, gIdx, qIdx) }}. {{ q.text }}</p>
               <ul v-if="q.options.length" class="list-disc pl-5">
@@ -130,8 +137,6 @@
     </div>
   </div>
 </template>
-
-<!-- script and styles remain unchanged -->
 
 <script setup lang="ts">
 import { ref } from 'vue'
@@ -149,20 +154,21 @@ import {
 const testStore = useTestStore()
 
 interface Question {
-  type: string
   text: string
   options: string[]
   answer: string
-  explanation?: string
-  wordLimit?: number
 }
 
 interface QuestionGroup {
   instruction: string
+  type: string
+  explanation?: string
+  wordLimit?: number
   questions: Question[]
 }
 
 interface Section {
+  title: string
   passage: string
   image: File | null
   groups: QuestionGroup[]
@@ -182,7 +188,6 @@ const questionTypes = [
   'Paragraph Matching'
 ]
 
-
 const getSectionImageUrl = (section: Section): string => {
   return section.image instanceof File
     ? URL.createObjectURL(section.image)
@@ -193,13 +198,17 @@ const getSectionImageUrl = (section: Section): string => {
 
 const sections = ref<Section[]>([
   {
+    title: '',
     passage: '',
     image: null,
     groups: [
       {
         instruction: '',
+        type: 'Multiple Choice',
+        explanation: '',
+        wordLimit: undefined,
         questions: [
-          { type: 'Multiple Choice', text: '', options: [''], answer: '' }
+          { text: '', options: [''], answer: '' }
         ]
       }
     ]
@@ -232,13 +241,17 @@ function handleImageUpload(e: Event, sectionIndex: number) {
 
 function addSection() {
   sections.value.push({
+    title: '',
     passage: '',
     image: null,
     groups: [
       {
         instruction: '',
+        type: 'Multiple Choice',
+        explanation: '',
+        wordLimit: undefined,
         questions: [
-          { type: 'Multiple Choice', text: '', options: [''], answer: '' }
+          { text: '', options: [''], answer: '' }
         ]
       }
     ]
@@ -252,13 +265,15 @@ function removeSection(index: number) {
 function addGroup(sectionIndex: number) {
   sections.value[sectionIndex].groups.push({
     instruction: '',
+    type: 'Multiple Choice',
+    explanation: '',
+    wordLimit: undefined,
     questions: []
   })
 }
 
 function addQuestion(sectionIndex: number, groupIndex: number) {
   sections.value[sectionIndex].groups[groupIndex].questions.push({
-    type: 'Multiple Choice',
     text: '',
     options: [''],
     answer: ''

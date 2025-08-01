@@ -1,6 +1,11 @@
 <template>
-  <div class="min-h-screen py-10 px-4 bg-gradient-to-br from-blue-50 to-blue-100">
-    <div class="max-w-3xl mx-auto bg-white shadow-xl rounded-2xl p-8 animate-fade-in">
+  <!-- <div class="min-h-screen py-10 px-4 bg-gradient-to-br from-blue-50 to-blue-100"> -->
+    <StartTestModal
+      :visible="showModal"
+      sectionName="Listening"
+      @confirm="startTest"
+    />
+    <div class="max-w-8xl mx-auto bg-white shadow-xl rounded-2xl p-8 animate-fade-in">
       <h2 class="text-3xl font-bold text-blue-800 mb-6">IELTS Listening Test</h2>
 
       <audio controls class="w-full mb-6">
@@ -39,11 +44,17 @@
         </button>
       </div>
     </div>
-  </div>
+  <!-- </div> -->
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import StartTestModal from '../StartTestModal.vue';
+
+const showModal = ref(true)
+const startTest = () => {
+  showModal.value = false
+}
 
 const listeningGroups = ref([
   {

@@ -13,6 +13,7 @@
     "@types/node": "^24.1.0",
     "lucide-vue-next": "^0.528.0",
     "pinia": "^3.0.3",
+    "pinia-plugin-persistedstate": "^4.4.1",
     "tailwindcss": "^4.1.11",
     "ts": "^0.2.2",
     "vue": "^3.5.17",

@@ -115,7 +115,7 @@ const task1 = ref<{ text: string; type: string; image: File | null; imageUrl: st
   text: '',
   type: '',
   image: null,
-  imageUrl: null,
+  imageUrl: '',
 })
 
 const task2 = ref<string>('')
@@ -155,7 +155,7 @@ function saveQuestions() {
     {
       text: task1.value.text,
       type: task1.value.type,
-      image: task1.value.image,
+      imageUrl: URL.createObjectURL(task1.value.image as File)
     },
     {
       text: task2.value,

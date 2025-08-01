@@ -3,7 +3,7 @@ import { defineStore } from 'pinia'
 interface WritingTask1 {
   text: string
   type: string
-  image: File | null
+  imageUrl?: string
 }
 
 interface WritingTask2 {
@@ -29,7 +29,7 @@ export const useTestStore = defineStore('testStore', {
       task1: {
         text: '',
         type: '',
-        image: null,
+        imageUrl: '',
       } as WritingTask1,
       task2: {
         text: '',
@@ -53,4 +53,5 @@ export const useTestStore = defineStore('testStore', {
       this.writingQuestions.task2 = task2
     },
   },
+   persist: true,
 })
